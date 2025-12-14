@@ -4,8 +4,11 @@
 
 /* إعدادات الجسم الأساسية */
 body { 
+    @apply bg-bgBody dark:bg-darkBgBody text-textPrimary dark:text-darkTextPrimary;
     transition: background-color 0.3s ease, color 0.3s ease;
-    margin: 0; padding: 0; overflow: hidden;
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden; /* يمنع السكرول الخارجي */
     touch-action: manipulation;
 }
 
@@ -17,14 +20,12 @@ body {
 .dark .custom-scroll::-webkit-scrollbar-thumb { background: #334155; }
 
 /* Animations */
-@keyframes slideDown { from { opacity: 0; transform: translateY(-10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideDown { 
+    from { opacity: 0; transform: translateY(-10px) scale(0.95); } 
+    to { opacity: 1; transform: translateY(0) scale(1); } 
+}
 .dropdown-animate { animation: slideDown 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: top left; }
 .animate-fade-in { animation: fadeIn 0.5s ease-out; }
 
-/* Dynamic Island Styling */
-.island-container { position: fixed; top: 12px; left: 0; right: 0; display: flex; justify-content: center; z-index: 9999; pointer-events: none; }
-.dynamic-island { background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px); color: white; border-radius: 40px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translate3d(0,0,0); will-change: width, height, opacity; transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease; width: 0px; height: 0px; opacity: 0; padding: 0; }
-.dynamic-island.active { width: auto; min-width: 180px; height: 44px; opacity: 1; padding: 0 16px; }
-.island-content { display: flex; align-items: center; gap: 12px; white-space: nowrap; opacity: 0; transform: scale(0.95); transition: opacity 0.2s ease 0.1s, transform 0.2s ease 0.1s; }
-.dynamic-island.active .island-content { opacity: 1; transform: scale(1); }
+/* Shadow Utility for Icons */
+.icon-drop-shadow { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); transition: filter 0.3s ease, transform 0.3s ease; }

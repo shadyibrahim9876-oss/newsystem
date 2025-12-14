@@ -4,44 +4,51 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // مهم عشان الدارك مود يشتغل
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // الألوان الخاصة بتصميمك
-        accentPrimary: '#007AFF', // أزرق أبل المميز
-        accentSecondary: '#5856D6',
-        bgBody: '#F5F5F7',        // لون خلفية فاتح مريح للعين
+        bgBody: '#EBF1F5',
         cardWhite: '#FFFFFF',
-        textPrimary: '#1D1D1F',
-        textSecondary: '#86868B',
-        
-        // ألوان الوضع الليلي (Dark Mode)
-        darkBgBody: '#000000',
-        darkCard: '#1C1C1E',
-        darkTextPrimary: '#F5F5F7',
-        darkTextSecondary: '#86868B',
+        textPrimary: '#1A1A1A',
+        textSecondary: '#64748B',
+        darkBgBody: '#0F172A',
+        darkCard: '#1E293B',
+        darkTextPrimary: '#F8FAFC',
+        darkTextSecondary: '#94A3B8',
+        accentPrimary: '#714B67',
+        clockText: '#4A3B45',
       },
       fontFamily: {
-        sans: ['SF Pro Display', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
-        'glow': '0 0 20px rgba(0, 122, 255, 0.5)',
-        'soft': '0 4px 20px rgba(0, 0, 0, 0.05)',
+        'soft': '0 4px 20px rgba(0, 0, 0, 0.03)',
+        'float': '0 10px 40px -10px rgba(0,0,0,0.1)',
+        'glow': '0 0 15px rgba(113, 75, 103, 0.4)',
+      },
+      zIndex: {
+        'island': '9999',
+        'header': '100',
+        'subheader': '90',
+        'sidebar': '80',
       },
       animation: {
-        'fadeIn': 'fadeIn 0.5s ease-out forwards',
-        'slideUp': 'slideUp 0.5s ease-out forwards',
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'shake': 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both',
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        slideUp: {
-          '0%': { transform: 'translateY(20px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
+        shake: {
+          '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+          '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+          '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+          '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
+        }
       }
     },
   },

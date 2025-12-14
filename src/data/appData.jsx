@@ -1,4 +1,5 @@
 import React from 'react';
+// استيراد الأيقونات من الملف الجديد
 import * as CustomIcons from '../components/icons/CustomIcons';
 
 export const MASTER_APPS_DATA = [
@@ -61,6 +62,5 @@ export const MODULE_NAV_DATA = {
             title: "Returns & Reverse Logistics",
             items: ["Return Requests", "Return Authorization", "Repair Processing", "Refurbishment", "Waste & Recycling Handling"]
         }
-    ],
-    // يمكن إضافة بيانات الشحن هنا إذا كان له قوائم فرعية خاصة، ولكننا نستخدم الشحن كصفحة Wizard حالياً
+    ]
 };

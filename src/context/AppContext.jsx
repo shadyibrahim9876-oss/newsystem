@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
+import { MODULE_NAV_DATA } from '../data/appData';
 
-// دالة الصوت
+// دالة الصوت (Sound Utility)
 const playSound = (type) => {
     try {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -23,7 +24,8 @@ const playSound = (type) => {
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-    // --- Auth State ---
+    // --- Auth State (حالة تسجيل الدخول) ---
+    // هنا الحل لمشكلة اللوجن: بنبدأ بـ false، ولما اليوزر يدخل بنحولها true
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
 
@@ -45,6 +47,7 @@ export const AppProvider = ({ children }) => {
     const login = (username) => {
         setIsAuthenticated(true);
         setCurrentUser({ name: username, role: 'Admin' });
+        // ممكن نحفظ الحالة في LocalStorage عشان لو عمل ريفريش مايخرجش
         localStorage.setItem('isLoggedIn', 'true');
     };
 
@@ -59,16 +62,12 @@ export const AppProvider = ({ children }) => {
     };
 
     // Check Login on Mount
-useEffect(() => {
-    // if(localStorage.getItem('isLoggedIn') === 'true') {
-    //     setIsAuthenticated(true);
-    //     setCurrentUser({ name: 'Shady', role: 'Admin' });
-    // }
-    
-    // ضيف السطر ده مؤقتاً عشان يجبره يخرج
-    setIsAuthenticated(false); 
-    localStorage.removeItem('isLoggedIn');
-}, []);
+    useEffect(() => {
+        if(localStorage.getItem('isLoggedIn') === 'true') {
+            setIsAuthenticated(true);
+            setCurrentUser({ name: 'Shady', role: 'Admin' });
+        }
+    }, []);
 
     // Navigation Logic
     const navigateTo = (pageId) => {
@@ -80,8 +79,7 @@ useEffect(() => {
         setPage(pageId);
         
         // إظهار الساب هيدر تلقائياً مع الصفحات التي تدعمه
-        // (يتم التعامل مع هذا المنطق أيضاً داخل المكونات نفسها)
-        setShowSubHeader(true); 
+        if (MODULE_NAV_DATA[pageId.split('_')[0]]) setShowSubHeader(true);
     };
 
     const goBack = () => { if (currentIndex > 0) setCurrentIndex(prev => prev - 1); };

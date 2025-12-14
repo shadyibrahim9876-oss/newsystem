@@ -16,7 +16,7 @@ const ModuleSubHeader = () => {
 
     const basePage = activePage.split('_')[0];
     const navData = MODULE_NAV_DATA[basePage];
-    
+
     if (!navData) return null;
 
     const handleCategoryClick = (e, index) => {
@@ -26,11 +26,11 @@ const ModuleSubHeader = () => {
         } else {
             const rect = e.currentTarget.getBoundingClientRect();
             setDropdownStyle({ 
-                top: rect.bottom + 8, 
-                left: rect.left,      
-                minWidth: Math.max(rect.width + 40, 200) 
+                top: rect.bottom + 8,
+                left: rect.left,
+                minWidth: Math.max(rect.width + 40, 200)
             });
-            setActiveDropdown(index); 
+            setActiveDropdown(index);
         }
     };
 
@@ -58,17 +58,14 @@ const ModuleSubHeader = () => {
             {activeDropdown !== null && navData[activeDropdown] && (
                 <div 
                     className="fixed bg-white dark:bg-darkCard border border-gray-100 dark:border-gray-700 rounded-xl shadow-xl p-2 dropdown-animate z-dropdown max-h-[60vh] overflow-y-auto custom-scroll"
-                    style={dropdownStyle} 
+                    style={dropdownStyle}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex flex-col gap-1">
                         {navData[activeDropdown].items.map((item, idx) => (
                             <button 
                                 key={idx} 
-                                onClick={() => {
-                                    notify('info', item, 'Opening section...');
-                                    setActiveDropdown(null); 
-                                }}
+                                onClick={() => { notify('info', item, 'Opening section...'); setActiveDropdown(null); }}
                                 className="text-left px-3 py-2 text-sm text-textPrimary dark:text-white hover:bg-bgBody dark:hover:bg-gray-800 rounded-lg transition-colors font-medium flex items-center justify-between group whitespace-nowrap"
                             >
                                 {item}

@@ -1,198 +1,84 @@
 import React, { useState, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
-import '../../styles/Login.css';
+import Icon from '../ui/Icon';
 
 const Login = () => {
     const { login } = useContext(AppContext);
-    
-    // States
-    const [view, setView] = useState('loginView'); // loginView, signupView, helpView, forgotView
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
+    const [view, setView] = useState('login'); // login, signup, help
     const [shake, setShake] = useState(false);
-    const [overlayMessage, setOverlayMessage] = useState({ show: false, text: '', visible: false });
-    const [isRemembered, setIsRemembered] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    // Constants
-    const VALID_USER = "shady";
-    const VALID_PASS = "123";
-
-    // Helper to Switch Views
-    const switchView = (newView) => {
-        setError(false);
-        setView(newView);
-    };
-
-    const handleLogin = () => {
-        if (!username.trim() || !password) {
-            triggerOverlay("Please make sure you have entered the correct username and password", true);
-            return;
-        }
-
-        if (username === VALID_USER && password === VALID_PASS) {
-            // Success Sequence
-            setOverlayMessage({ show: true, text: `Welcome ${username}`, visible: false });
-            
-            // Animation Sequence
-            setTimeout(() => setOverlayMessage(prev => ({ ...prev, visible: true })), 50);
-            
+    const handleLogin = (e) => {
+        e?.preventDefault();
+        // محاكاة التحقق (نفس اللوجيك القديم)
+        if (username.toLowerCase() === 'shady' && password === '123') {
+            setLoading(true);
             setTimeout(() => {
-                setOverlayMessage(prev => ({ ...prev, visible: false }));
-                setTimeout(() => {
-                    setOverlayMessage({ show: true, text: 'Always be prepared for a great day', visible: true });
-                    // Final Redirect
-                    setTimeout(() => {
-                        login(username); // Call Context Login
-                    }, 2000);
-                }, 500);
-            }, 2000);
-
+                login(username);
+            }, 1000);
         } else {
-            // Failure Sequence
+            setError('Incorrect username or password');
             setShake(true);
-            setError(true);
-            setPassword('');
             setTimeout(() => setShake(false), 500);
         }
     };
 
-    const triggerOverlay = (text, isError = false) => {
-        setOverlayMessage({ show: true, text: text, visible: false });
-        setTimeout(() => setOverlayMessage(prev => ({ ...prev, visible: true })), 50);
-        
-        setTimeout(() => {
-            setOverlayMessage(prev => ({ ...prev, visible: false }));
-            setTimeout(() => {
-                if(isError) {
-                   setOverlayMessage({ show: false, text: '', visible: false }); 
-                }
-            }, 500);
-        }, 3000);
-    };
-
     return (
-        <div className="login-wrapper">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white text-[#1d1d1f] font-sans overflow-hidden relative">
             
-            <div className={`container ${shake ? 'shake-anim' : ''}`} style={{opacity: overlayMessage.show ? 0 : 1}}>
-                <div className="logo">Systemize</div>
-
-                {/* --- Login View --- */}
-                {view === 'loginView' && (
-                    <div className="view-section active">
-                        <div className="form-group">
-                            <input 
-                                type="text" 
-                                value={username} 
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder=" " 
-                                autoComplete="off"
-                            />
-                            <label className="floating-label">Username</label>
-                        </div>
-
-                        <div className="form-group">
-                            <input 
-                                type="password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                                placeholder=" " 
-                            />
-                            <label className="floating-label">Password</label>
-                        </div>
-
-                        <div className="privacy-icon-container">
-                             <svg className="privacy-icon-svg" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/> 
-                            </svg>
-                        </div>
-
-                        <div className="disclaimer-text">
-                            Your Systemize Account information is used to allow you to sign in securely and access your global enterprise data.
-                        </div>
-                        
-                        <div className="error-msg" style={{opacity: error ? 1 : 0}}>Incorrect username or password</div>
-
-                        <div className="action-row">
-                            <button 
-                                className={`btn-secondary ${isRemembered ? 'checked' : ''}`} 
-                                onClick={() => setIsRemembered(!isRemembered)}
-                            >
-                                Remember
-                            </button>
-                            <button className="btn-primary" onClick={handleLogin}>Log In</button>
-                            <button className="btn-icon" onClick={() => {setUsername(''); setPassword(''); setError(false);}}>✕</button>
-                        </div>
-
-                        <div className="bottom-links">
-                            <span className="pill-link" onClick={() => switchView('signupView')}>New employees sign in</span>
-                            <span className="pill-link" onClick={() => switchView('helpView')}>Connect for help</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Signup View --- */}
-                {view === 'signupView' && (
-                    <div className="view-section active">
-                        <h2 style={{fontWeight: 600, fontSize: '21px', marginBottom: '30px'}}>New Employee Setup</h2>
-                        <div className="form-group">
-                            <input type="text" placeholder=" " /><label className="floating-label">Employee ID</label>
-                        </div>
-                        <div className="form-group">
-                            <input type="email" placeholder=" " /><label className="floating-label">Corporate Email</label>
-                        </div>
-                        <div className="action-row">
-                            <button className="btn-secondary" onClick={() => switchView('loginView')}>Back</button>
-                            <button className="btn-primary">Verify</button>
-                        </div>
-                        <div className="bottom-links">
-                            <span className="pill-link" onClick={() => switchView('forgotView')}>Forgot Password?</span>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Help View --- */}
-                {view === 'helpView' && (
-                    <div className="view-section active">
-                        <h2 style={{fontWeight: 600, fontSize: '21px', marginBottom: '30px'}}>Support Center</h2>
-                        <p style={{color: 'var(--text-secondary)', marginBottom: '30px'}}>Need assistance? Our team is here to help.</p>
-                        <div className="action-row">
-                            <button className="btn-secondary" onClick={() => switchView('loginView')}>Back</button>
-                            <button className="btn-primary" onClick={() => window.open('https://systemize.com', '_blank')}>Open Ticket</button>
-                        </div>
-                    </div>
-                )}
-
-                {/* --- Forgot View --- */}
-                {view === 'forgotView' && (
-                    <div className="view-section active">
-                        <h2 style={{fontWeight: 600, fontSize: '21px', marginBottom: '30px'}}>Reset Password</h2>
-                        <div className="form-group">
-                            <input type="email" placeholder=" " /><label className="floating-label">Enter your email</label>
-                        </div>
-                        <div className="action-row">
-                            <button className="btn-secondary" onClick={() => switchView('signupView')}>Back</button>
-                            <button className="btn-primary">Send Link</button>
-                        </div>
-                    </div>
-                )}
-
+            {/* Logo */}
+            <div className={`transition-all duration-500 mb-10 ${view !== 'login' ? 'opacity-0 translate-y-[-20px]' : 'opacity-100'}`}>
+                <h1 className="text-4xl font-bold tracking-tight">Systemize</h1>
             </div>
 
-            {/* Message Overlay */}
-            <div className="message-overlay" style={{display: overlayMessage.show ? 'flex' : 'none'}}>
-                <div className={`message-text ${overlayMessage.visible ? 'visible' : ''}`}>
-                    {overlayMessage.text}
-                </div>
+            {/* Login Container */}
+            <div className={`w-full max-w-[400px] px-6 transition-all duration-500 ${shake ? 'animate-shake' : ''}`}>
+                
+                {view === 'login' && (
+                    <div className="animate-fade-in">
+                        <form onSubmit={handleLogin} className="space-y-5">
+                            <div className="relative group">
+                                <input type="text" value={username} onChange={(e) => { setUsername(e.target.value); setError(''); }} className="w-full px-4 pt-5 pb-2 h-14 border border-[#d2d2d7] rounded-xl text-lg outline-none focus:border-[#0071e3] transition-colors peer bg-transparent" placeholder=" " />
+                                <label className="absolute left-4 top-4 text-[#86868b] text-lg pointer-events-none transition-all peer-focus:text-xs peer-focus:top-2 peer-focus:text-[#0071e3] peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:top-2">Username</label>
+                            </div>
+
+                            <div className="relative group">
+                                <input type="password" value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }} className="w-full px-4 pt-5 pb-2 h-14 border border-[#d2d2d7] rounded-xl text-lg outline-none focus:border-[#0071e3] transition-colors peer bg-transparent" placeholder=" " />
+                                <label className="absolute left-4 top-4 text-[#86868b] text-lg pointer-events-none transition-all peer-focus:text-xs peer-focus:top-2 peer-focus:text-[#0071e3] peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:top-2">Password</label>
+                            </div>
+
+                            {error && <div className="text-[#ff3b30] text-sm text-center font-medium animate-pulse">{error}</div>}
+
+                            <div className="flex items-center justify-center gap-4 pt-2">
+                                <button type="button" className="px-6 py-3 rounded-full border border-[#d2d2d7] text-sm font-medium hover:border-black transition-colors">Remember</button>
+                                <button type="submit" disabled={loading} className="px-10 py-3 rounded-full bg-black text-white text-base font-semibold hover:bg-[#333] transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                    {loading ? 'Signing in...' : 'Log In'}
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className="mt-10 flex justify-center gap-6">
+                            <button onClick={() => setView('signup')} className="px-4 py-2 bg-[#f5f5f7] rounded-full text-[13px] font-medium text-[#0071e3] hover:bg-[#e8e8ed] transition-colors">New employees sign in</button>
+                            <button onClick={() => setView('help')} className="px-4 py-2 bg-[#f5f5f7] rounded-full text-[13px] font-medium text-[#0071e3] hover:bg-[#e8e8ed] transition-colors">Connect for help</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Signup & Help Views (Simple Placeholders) */}
+                {view !== 'login' && (
+                    <div className="animate-fade-in text-center">
+                        <h2 className="text-xl font-semibold mb-6">{view === 'signup' ? 'New Employee Setup' : 'Support Center'}</h2>
+                        <p className="text-[#86868b] mb-8 text-sm">{view === 'signup' ? 'Contact HR for credentials.' : 'Our team is here to help.'}</p>
+                        <button onClick={() => setView('login')} className="px-8 py-3 rounded-full bg-[#f5f5f7] text-[#1d1d1f] font-medium hover:bg-[#e8e8ed] transition-colors">Back to Login</button>
+                    </div>
+                )}
             </div>
 
-            {/* Footer */}
-            <footer className="footer" style={{opacity: overlayMessage.show ? 0 : 1}}>
-                 <div className="footer-legal">
-                    <div>&copy; 2025 Systemize Inc.</div>
-                    <span>Egypt</span>
-                </div>
+            <footer className="absolute bottom-8 w-full text-center">
+                <div className="text-[11px] text-[#86868b]">© 2025 Systemize Inc.</div>
             </footer>
         </div>
     );
