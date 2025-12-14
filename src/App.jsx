@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AppProvider, AppContext } from './context/AppContext';
 
 // Components
@@ -10,7 +10,9 @@ import SideMenu from './components/layout/SideMenu';
 import ModuleSubHeader from './components/layout/ModuleSubHeader';
 import HomeDashboardContent from './components/views/HomeDashboardContent';
 import ShippingContent from './components/views/ShippingContent';
-import { MASTER_APPS_DATA, MODULE_NAV_DATA } from './data/appData';
+
+// لاحظ: ضفت .jsx عشان نضمن إنه يقرا الملف الجديد صح
+import { MASTER_APPS_DATA, MODULE_NAV_DATA } from './data/appData.jsx';
 
 // --- Home Content (Welcome Screen) ---
 const HomeContent = () => {
@@ -38,7 +40,8 @@ const HomeContent = () => {
 // --- Apps List Content ---
 const AppsListContent = () => {
     const { notify, navigateTo } = useContext(AppContext);
-    const sortedApps = [...MASTER_APPS_DATA].sort((a, b) => a.label.localeCompare(b.label));
+    // تأكد من وجود الداتا قبل الترتيب
+    const sortedApps = MASTER_APPS_DATA ? [...MASTER_APPS_DATA].sort((a, b) => a.label.localeCompare(b.label)) : [];
 
     return (
         <div className="max-w-full animate-[fadeIn_0.5s_ease-out] py-8 pl-2">
@@ -71,12 +74,16 @@ const AppsListContent = () => {
 // --- Dashboard Layout Component ---
 const DashboardLayout = () => {
     const { sidebarOpen, activePage } = useContext(AppContext);
-    const basePage = activePage.split('_')[0];
+    
+    // Safety check for activePage
+    const safeActivePage = activePage || 'home';
+    const basePage = safeActivePage.split('_')[0];
     const hasSubNav = MODULE_NAV_DATA[basePage];
-    const isDashboard = activePage === 'home_dashboard';
+    const isDashboard = safeActivePage === 'home_dashboard';
 
     return (
-        <div className="flex h-screen w-full font-sans transition-colors duration-300 bg-bgBody dark:bg-darkBgBody">
+        <div className="flex h-screen w-full font-sans transition-colors duration-300 bg-bgBody dark:bg-darkBgBody overflow-hidden">
+            {/* الخلفية المتدرجة المخفية لاستخدامها في الأيقونات */}
             <svg width="0" height="0" style={{position: 'absolute'}}>
                 <defs>
                     <linearGradient id="homeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -87,28 +94,31 @@ const DashboardLayout = () => {
                 </defs>
             </svg>
 
-            <DynamicIsland />
-            <TopHeader />
-            <ModuleSubHeader />
-            <SideMenu />
+            {/* تم إضافة z-50 لضمان ظهور القوائم فوق المحتوى */}
+            <div className="relative z-50">
+                <DynamicIsland />
+                <TopHeader />
+                <ModuleSubHeader />
+                <SideMenu />
+            </div>
 
-            <main className={`flex-1 h-full w-full flex flex-col bg-bgBody dark:bg-darkBgBody transition-all duration-300 ease-in-out relative ${hasSubNav ? 'pt-40' : (isDashboard ? 'pt-16' : 'pt-20')} ${sidebarOpen ? 'ml-0 md:ml-0' : 'ml-0'}`}>
-                <div className="flex-1 overflow-y-auto custom-scroll px-6 pb-6 h-full">
-                    {activePage === 'home' && <HomeContent />}
-                    {activePage === 'home_dashboard' && <HomeDashboardContent />}
-                    {activePage === 'apps' && <AppsListContent />}
-                    {activePage.startsWith('shipping') && <ShippingContent />}
+            <main className={`flex-1 h-full w-full flex flex-col bg-bgBody dark:bg-darkBgBody transition-all duration-300 ease-in-out relative ${hasSubNav ? 'pt-40' : (isDashboard ? 'pt-16' : 'pt-20')} ${sidebarOpen ? 'ml-0' : 'ml-0'}`}>
+                <div className="flex-1 overflow-y-auto custom-scroll px-6 pb-6 h-full z-0">
+                    {safeActivePage === 'home' && <HomeContent />}
+                    {safeActivePage === 'home_dashboard' && <HomeDashboardContent />}
+                    {safeActivePage === 'apps' && <AppsListContent />}
+                    {safeActivePage.startsWith('shipping') && <ShippingContent />}
                     
-                    {/* Fallback View for pages under construction */}
-                    {!['home', 'home_dashboard', 'apps'].includes(activePage) && !activePage.startsWith('shipping') && (
+                    {/* Fallback View */}
+                    {!['home', 'home_dashboard', 'apps'].includes(safeActivePage) && !safeActivePage.startsWith('shipping') && (
                         <div className="h-[70vh] flex flex-col items-center justify-center text-textSecondary dark:text-darkTextSecondary animate-fade-in">
                             <div className="bg-cardWhite dark:bg-darkCard p-8 rounded-full shadow-soft mb-6 border dark:border-gray-800">
-                                {MASTER_APPS_DATA.find(a => a.id === activePage) ? 
-                                    MASTER_APPS_DATA.find(a => a.id === activePage).icon 
+                                {MASTER_APPS_DATA.find(a => a.id === safeActivePage) ? 
+                                    MASTER_APPS_DATA.find(a => a.id === safeActivePage).icon 
                                     : <Icon name="construction" size={64} className="text-accentPrimary" />
                                 }
                             </div>
-                            <h2 className="text-3xl font-bold mb-2 capitalize text-textPrimary dark:text-white">{activePage.replace(/_/g, ' ')}</h2>
+                            <h2 className="text-3xl font-bold mb-2 capitalize text-textPrimary dark:text-white">{safeActivePage.replace(/_/g, ' ')}</h2>
                             <p className="text-lg">Module under construction</p>
                         </div>
                     )}
@@ -122,10 +132,12 @@ const DashboardLayout = () => {
 const AppContent = () => {
     const { isAuthenticated } = useContext(AppContext);
 
+    // إذا لم يسجل الدخول، اعرض شاشة الدخول
     if (!isAuthenticated) {
         return <Login />;
     }
 
+    // إذا سجل الدخول، اعرض الداشبورد
     return <DashboardLayout />;
 };
 

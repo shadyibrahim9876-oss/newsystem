@@ -59,12 +59,16 @@ export const AppProvider = ({ children }) => {
     };
 
     // Check Login on Mount
-    useEffect(() => {
-        if(localStorage.getItem('isLoggedIn') === 'true') {
-            setIsAuthenticated(true);
-            setCurrentUser({ name: 'Shady', role: 'Admin' });
-        }
-    }, []);
+useEffect(() => {
+    // if(localStorage.getItem('isLoggedIn') === 'true') {
+    //     setIsAuthenticated(true);
+    //     setCurrentUser({ name: 'Shady', role: 'Admin' });
+    // }
+    
+    // ضيف السطر ده مؤقتاً عشان يجبره يخرج
+    setIsAuthenticated(false); 
+    localStorage.removeItem('isLoggedIn');
+}, []);
 
     // Navigation Logic
     const navigateTo = (pageId) => {
